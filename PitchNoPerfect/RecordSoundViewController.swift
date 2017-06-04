@@ -16,25 +16,16 @@ class RecordSoundViewController: UIViewController, AVAudioRecorderDelegate {
     @IBOutlet weak var stopRecordingBtn: UIButton!
     
     var audioRecorder : AVAudioRecorder!
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-    }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         enableRecording(true)
     }
     
-    func enableRecording(_ record: Bool) {
-        self.recordingBtn.isEnabled = record
-        self.stopRecordingBtn.isEnabled = !record
-        
-        if record {
-            recordingLAbel.text = "Tap to Record"
-        } else {
-            recordingLAbel.text = "Recording in Process"
-        }
+    func enableRecording(_ record: Bool = true) {
+        recordingBtn.isEnabled = record
+        stopRecordingBtn.isEnabled = !record
+        recordingLAbel.text = record ? "Tap to Record" : "Recording in Process"
     }
 
     @IBAction func recordAudio(_ sender: Any) {
@@ -56,7 +47,7 @@ class RecordSoundViewController: UIViewController, AVAudioRecorderDelegate {
     }
 
     @IBAction func stopRecording(_ sender: Any) {
-        enableRecording(true)
+        enableRecording()
         audioRecorder.stop()
         let session = AVAudioSession.sharedInstance()
         try! session.setActive(false)
@@ -67,7 +58,10 @@ class RecordSoundViewController: UIViewController, AVAudioRecorderDelegate {
             performSegue(withIdentifier: "playSegue", sender: recorder.url)
         }
         else {
-            print("could not save the audio")
+            let alertController = UIAlertController(title: "Error", message: "Could not save audio", preferredStyle: .alert)
+            let action = UIAlertAction(title: "OK", style: .default, handler: nil)
+            alertController.addAction(action)
+            present(alertController, animated: true, completion: nil)
         }
     }
     
